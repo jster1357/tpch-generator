@@ -17,6 +17,6 @@ fi
 echo 'Downloading TPCH data generator from git...'
 git clone https://github.com/jster1357/tpch-generator.git
 ##change directories
-cd tpch-generator/datagen/
+cd datagen/
 echo 'running data generation...'
 ./datagen.sh "$data_size" "$bucket"
