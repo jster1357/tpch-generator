@@ -140,11 +140,3 @@ create table ${DB1}.supplier
 stored as parquet
 as select * from ${DB}.supplier;
 
-analyze table ${DB1}.customer compute statistics for columns;
-analyze table ${DB1}.lineitem compute statistics for columns;
-analyze table ${DB1}.nation compute statistics for columns;
-analyze table ${DB1}.orders compute statistics for columns;
-analyze table ${DB1}.part compute statistics for columns;
-analyze table ${DB1}.partsupp compute statistics for columns;
-analyze table ${DB1}.region compute statistics for columns;
-analyze table ${DB1}.supplier compute statistics for columns;
