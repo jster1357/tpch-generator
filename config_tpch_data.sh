@@ -18,10 +18,6 @@ if [[ -z "data_format" ]]; then
 	echo "input for data format is null. Parquet will be generated"
 fi
 
-##clone generator
-echo 'Downloading TPCH data generator from git...'
-git clone https://github.com/jster1357/tpch-generator.git
-##change directories
 cd datagen/
 echo 'running data generation...'
 ./datagen.sh "$data_size" "$bucket" "$format"
