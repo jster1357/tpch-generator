@@ -64,3 +64,6 @@ hadoop distcp hdfs://${DIR}/${SCALE}/supplier ${BUCKET}/text/${SCALE}/supplier
 # Create the text/flat tables as external tables. These will be later be converted to Parquet.
 echo "Loading text data into external and parquet tables"
 beeline -u "jdbc:hive2://localhost:10000" -f /home/admin_jtaras_altostrat_com/tpch-generator/datagen/ddl/text/alltables2.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_parquet_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
+
+echo "Loading hudi data..."
+beeline -u "jdbc:hive2://localhost:10000" -f /home/admin_jtaras_altostrat_com/tpch-generator/datagen/ddl/text/alltables2.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_hudi_${SCALE}
