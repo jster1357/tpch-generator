@@ -20,4 +20,4 @@ fi
 
 cd datagen/
 echo 'running data generation...'
-./datagen.sh "$data_size" "$bucket" "$format"
+./datagen.sh "$data_size" "$bucket" "$data_format"

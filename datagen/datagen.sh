@@ -9,6 +9,10 @@ function runcommand {
 	$1
 }
 
+echo "DATA SCALE: $SCALE"
+echo "BUCKET: $BUCKET"
+echo "DATA FORMAT: $DATA_FORMAT"
+
 if [ ! -f target/target/tpch-gen-1.0-SNAPSHOT.jar ]; then
 	echo "Please build the data generator with ./tpch-build.sh first"
 	exit 1
@@ -64,13 +68,72 @@ hadoop distcp hdfs://${DIR}/${SCALE}/region ${BUCKET}/text/${SCALE}/region
 hadoop distcp hdfs://${DIR}/${SCALE}/supplier ${BUCKET}/text/${SCALE}/supplier
 
 # Create the text/flat tables as external tables. These will be later be converted to Parquet.
-echo "Loading text data into external and parquet tables"
-beeline -u "jdbc:hive2://localhost:10000" -f /home/admin_jtaras_altostrat_com/tpch-generator/datagen/ddl/text/alltables2.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_parquet_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
+echo "Loading data into seleted format..."
 
+function load_text(){
+	echo "Loading text data.."
+ beeline -u "jdbc:hive2://localhost:10000" -f ddl/text/textDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_text_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
+}
 
-if [ $DATA_FORMAT -eq "hudi" ]; then
+function load_parquet(){
+	echo "Loading parquet data..."
+	beeline -u "jdbc:hive2://localhost:10000" -f ddl/parquet/parquetDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_parquet_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
+
+}
+
+function load_hudi(){
 	echo "Loading hudi data..."
-	spark-sql -f ddl/hudi/hudiDDL.sql -hivevar DB=tpch_parquet_${SCALE} --hivevar DB1=tpch_hudi_${SCALE} \
+	spark-sql -f ddl/hudi/hudiDDL.sql -hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_hudi_${SCALE} \
+  --packages org.apache.hudi:hudi-spark3.1-bundle_2.12:0.12.0 \
   --conf 'spark.serializer=org.apache.spark.serializer.KryoSerializer' \
   --conf 'spark.sql.extensions=org.apache.spark.sql.hudi.HoodieSparkSessionExtension'
+}
+
+function load_iceberg(){
+        echo "Loading iceberg data..."
+        spark-sql -f ddl/iceberg/icebergDDL.sql -hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_iceberg_${SCALE} \
+	--packages org.apache.iceberg:iceberg-spark-runtime-3.1_2.12:0.14.0 \
+    	--conf spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions \
+    	--conf spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkSessionCatalog 
+}
+
+function load_delta(){
+	echo "Loading delta data..."
+	spark-sql -f /ddl/delta/deltaDDL.sql -hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_delta_${SCALE} \ 
+	--packages io.delta:delta-core_2.12:1.0.1 \
+	--conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
+	--conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
+}
+
+function load_orc(){
+	echo "Loading orc data..."
+	beeline -u "jdbc:hive2://localhost:10000" -f ddl/orc/orcDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_orc_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
+}
+
+echo "loading text (default)..."
+load_text
+
+if [ "$DATA_FORMAT" = "hudi" ]; then
+	load_hudi
+
+elif [ "$DATA_FORMAT" = "delta" ]; then
+	load_delta
+
+elif [ "$DATA_FORMAT" = "orc" ]; then 
+	load_orc
+
+elif [ "$DATA_FORMAT" = "parquet" ]; then
+	load_parquet
+
+elif [ "$DATA_FORMAT" = "iceberg" ]; then 
+	load_iceberg
+
+elif [ "$DATA_FORMAT" = "all" ]; then
+	load_hudi
+	load_delta
+	load_iceberg
+	load_orc
+	load_parquet
 fi
+
+echo "Finished Loading Files"
