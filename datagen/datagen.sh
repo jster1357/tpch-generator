@@ -9,9 +9,6 @@ function runcommand {
 	$1
 }
 
-echo "DATA SCALE: $SCALE"
-echo "BUCKET: $BUCKET"
-echo "DATA FORMAT: $DATA_FORMAT"
 
 if [ ! -f target/target/tpch-gen-1.0-SNAPSHOT.jar ]; then
 	echo "Please build the data generator with ./tpch-build.sh first"
@@ -27,6 +24,11 @@ fi
 SCALE=$1
 BUCKET=$2
 DATA_FORMAT=$3
+
+echo "DATA SCALE: $SCALE"
+echo "BUCKET: $BUCKET"
+echo "DATA FORMAT: $DATA_FORMAT"
+
 
 if [ "X$DEBUG_SCRIPT" != "X" ]; then
 	set -x
@@ -72,13 +74,14 @@ echo "Loading data into seleted format..."
 
 function load_text(){
 	echo "Loading text data.."
- beeline -u "jdbc:hive2://localhost:10000" -f ddl/text/textDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_text_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
+ #beeline -u "jdbc:hive2://localhost:10000" -f ddl/text/textDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_text_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
+	spark-sql -f ddl/text/textDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_text_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
 }
 
 function load_parquet(){
 	echo "Loading parquet data..."
-	beeline -u "jdbc:hive2://localhost:10000" -f ddl/parquet/parquetDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_parquet_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
-
+	#beeline -u "jdbc:hive2://localhost:10000" -f ddl/parquet/parquetDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_parquet_${SCALE}
+	spark-sql -f ddl/parquet/parquetDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_parquet_${SCALE}
 }
 
 function load_hudi(){
@@ -133,7 +136,6 @@ elif [ "$DATA_FORMAT" = "all" ]; then
 	load_delta
 	load_iceberg
 	load_orc
-	load_parquet
 fi
 
 echo "Finished Loading Files"

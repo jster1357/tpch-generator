@@ -1,7 +1,15 @@
 create database if not exists ${DB};
 use ${DB};
 
-drop table if exists lineitem;
+drop table if exists ${DB1}.customer;
+drop table if exists ${DB1}.lineitem;
+drop table if exists ${DB1}.nation;
+drop table if exists ${DB1}.orders;
+drop table if exists ${DB1}.part;
+drop table if exists ${DB1}.partsupp;
+drop table if exists ${DB1}.region;
+drop table if exists ${DB1}.supplier;
+
 create external table lineitem 
 (L_ORDERKEY BIGINT,
  L_PARTKEY BIGINT,
@@ -22,7 +30,6 @@ create external table lineitem
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
 LOCATION '${LOCATION}/lineitem';
 
-drop table if exists part;
 create external table part (P_PARTKEY BIGINT,
  P_NAME STRING,
  P_MFGR STRING,
@@ -35,7 +42,6 @@ create external table part (P_PARTKEY BIGINT,
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
 LOCATION '${LOCATION}/part/';
 
-drop table if exists supplier;
 create external table supplier (S_SUPPKEY BIGINT,
  S_NAME STRING,
  S_ADDRESS STRING,
@@ -46,7 +52,6 @@ create external table supplier (S_SUPPKEY BIGINT,
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
 LOCATION '${LOCATION}/supplier/';
 
-drop table if exists partsupp;
 create external table partsupp (PS_PARTKEY BIGINT,
  PS_SUPPKEY BIGINT,
  PS_AVAILQTY INT,
@@ -55,7 +60,6 @@ create external table partsupp (PS_PARTKEY BIGINT,
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
 LOCATION'${LOCATION}/partsupp';
 
-drop table if exists nation;
 create external table nation (N_NATIONKEY BIGINT,
  N_NAME STRING,
  N_REGIONKEY BIGINT,
@@ -63,14 +67,12 @@ create external table nation (N_NATIONKEY BIGINT,
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
 LOCATION '${LOCATION}/nation';
 
-drop table if exists region;
 create external table region (R_REGIONKEY BIGINT,
  R_NAME STRING,
  R_COMMENT STRING)
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
 LOCATION '${LOCATION}/region';
 
-drop table if exists customer;
 create external table customer (C_CUSTKEY BIGINT,
  C_NAME STRING,
  C_ADDRESS STRING,
@@ -82,7 +84,6 @@ create external table customer (C_CUSTKEY BIGINT,
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
 LOCATION '${LOCATION}/customer';
 
-drop table if exists orders;
 create external table orders (O_ORDERKEY BIGINT,
  O_CUSTKEY BIGINT,
  O_ORDERSTATUS STRING,
