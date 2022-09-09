@@ -10,6 +10,15 @@ drop table if exists ${DB1}.partsupp;
 drop table if exists ${DB1}.region;
 drop table if exists ${DB1}.supplier;
 
+drop table if exists ${DB1}.customer_external;
+drop table if exists ${DB1}.lineitem_external;
+drop table if exists ${DB1}.nation_external;
+drop table if exists ${DB1}.orders_external;
+drop table if exists ${DB1}.part_external;
+drop table if exists ${DB1}.partsupp_external;
+drop table if exists ${DB1}.region_external;
+drop table if exists ${DB1}.supplier_external;
+
 create table ${DB1}.lineitem_external 
 (L_ORDERKEY BIGINT,
 L_PARTKEY BIGINT,
@@ -113,44 +122,44 @@ LOCATION '${LOCATION}/orders';
 create table ${DB1}.customer
 using CSV
 as
-select * from ${DB}.customer;
+select * from ${DB1}.customer_external;
 
 
 create table ${DB1}.lineitem
 using CSV
 as 
-select * from ${DB}.lineitem;
+select * from ${DB1}.lineitem_external;
 
 
 create table ${DB1}.nation
 using CSV
 as
-select * from ${DB}.nation;
+select * from ${DB1}.nation_external;
 
 
 create table ${DB1}.orders
 using CSV
 as 
-select * from ${DB}.orders;
+select * from ${DB1}.orders_external;
 
 
 create table ${DB1}.part
 using CSV
 as 
-select * from ${DB}.part;
+select * from ${DB1}.part_external;
 
 
 create table ${DB1}.partsupp
 using CSV
 as 
-select * from ${DB}.partsupp;
+select * from ${DB1}.partsupp_external;
 
 create table ${DB1}.region
 using CSV
 as 
-select * from ${DB}.region;
+select * from ${DB1}.region_external;
 
 create table ${DB1}.supplier
 using CSV
 as 
-select * from ${DB}.supplier;
+select * from ${DB1}.supplier_external;
