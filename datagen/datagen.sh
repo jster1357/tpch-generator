@@ -83,8 +83,6 @@ function load_avro(){
 	spark-sql -f ddl/avro/avroDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_avro_${SCALE}
 }
 
-
-
 function load_parquet(){
 	echo "Loading parquet data..."
 	#beeline -u "jdbc:hive2://localhost:10000" -f ddl/parquet/parquetDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_parquet_${SCALE}
@@ -109,7 +107,7 @@ function load_iceberg(){
 
 function load_delta(){
 	echo "Loading delta data..."
-	spark-sql -f /ddl/delta/deltaDDL.sql -hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_delta_${SCALE} \ 
+	spark-sql -f /ddl/delta/deltaDDL.sql -hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_delta_${SCALE} \
 	--packages io.delta:delta-core_2.12:1.0.1 \
 	--conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
 	--conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"

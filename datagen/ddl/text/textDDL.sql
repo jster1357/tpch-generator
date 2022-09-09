@@ -1,6 +1,10 @@
 create database if not exists ${DB};
 use ${DB};
 
+SET spark.hadoop.mapred.input.dir.recursive=true;
+SET spark.hadoop.hive.mapred.supports.subdirectories=true;
+SET spark.hadoop.mapreduce.input.fileinputformat.input.dir.recursive=true;
+
 drop table if exists ${DB1}.customer;
 drop table if exists ${DB1}.lineitem;
 drop table if exists ${DB1}.nation;
