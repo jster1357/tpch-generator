@@ -10,7 +10,7 @@ drop table if exists ${DB1}.partsupp;
 drop table if exists ${DB1}.region;
 drop table if exists ${DB1}.supplier;
 
-create table lineitem 
+create table ${DB1}.lineitem_external 
 (L_ORDERKEY BIGINT,
 L_PARTKEY BIGINT,
 L_SUPPKEY BIGINT,
@@ -31,7 +31,7 @@ USING CSV
 OPTIONS ("delimiter" ='|')
 LOCATION '${LOCATION}/lineitem';
 
-create table part (
+create table ${DB1}.part_external (
 P_PARTKEY BIGINT,
 P_NAME STRING,
 P_MFGR STRING,
@@ -45,7 +45,7 @@ USING CSV
 OPTIONS ("delimiter" ='|')
 LOCATION '${LOCATION}/part/';
 
-create table supplier (
+create table ${DB1}.supplier_external (
 S_SUPPKEY BIGINT,
 S_NAME STRING,
 S_ADDRESS STRING,
@@ -57,7 +57,7 @@ USING CSV
 OPTIONS ("delimiter" ='|')
 LOCATION '${LOCATION}/supplier/';
 
-create table partsupp (
+create table ${DB1}.partsupp_external (
 PS_PARTKEY BIGINT,
 PS_SUPPKEY BIGINT,
 PS_AVAILQTY INT,
@@ -67,7 +67,7 @@ USING CSV
 OPTIONS ("delimiter" ='|')
 LOCATION'${LOCATION}/partsupp';
 
-create table nation (
+create table ${DB1}.nation_external (
 N_NATIONKEY BIGINT,
 N_NAME STRING,
 N_REGIONKEY BIGINT,
@@ -75,7 +75,7 @@ N_COMMENT STRING)
 OPTIONS ("delimiter" ='|')
 LOCATION '${LOCATION}/nation';
 
-create table region (
+create table ${DB1}.region_external (
 R_REGIONKEY BIGINT,
 R_NAME STRING,
 R_COMMENT STRING)
@@ -83,7 +83,7 @@ USING CSV
 OPTIONS ("delimiter" ='|')
 LOCATION '${LOCATION}/region';
 
-create table customer (
+create table ${DB1}.customer_external (
 C_CUSTKEY BIGINT,
 C_NAME STRING,
 C_ADDRESS STRING,
@@ -96,7 +96,7 @@ USING CSV
 OPTIONS ("delimiter" ='|')
 LOCATION '${LOCATION}/customer';
 
-create table orders (
+create table ${DB1}.orders_external (
 O_ORDERKEY BIGINT,
 O_CUSTKEY BIGINT,
 O_ORDERSTATUS STRING,
@@ -109,3 +109,48 @@ O_COMMENT STRING)
 USING CSV
 OPTIONS ("delimiter" ='|')
 LOCATION '${LOCATION}/orders';
+
+create table ${DB1}.customer
+using CSV
+as
+select * from ${DB}.customer;
+
+
+create table ${DB1}.lineitem
+using CSV
+as 
+select * from ${DB}.lineitem;
+
+
+create table ${DB1}.nation
+using CSV
+as
+select * from ${DB}.nation;
+
+
+create table ${DB1}.orders
+using CSV
+as 
+select * from ${DB}.orders;
+
+
+create table ${DB1}.part
+using CSV
+as 
+select * from ${DB}.part;
+
+
+create table ${DB1}.partsupp
+using CSV
+as 
+select * from ${DB}.partsupp;
+
+create table ${DB1}.region
+using CSV
+as 
+select * from ${DB}.region;
+
+create table ${DB1}.supplier
+using CSV
+as 
+select * from ${DB}.supplier;
