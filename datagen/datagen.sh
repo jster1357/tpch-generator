@@ -78,6 +78,13 @@ function load_text(){
 	spark-sql -f ddl/text/textDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_text_${SCALE} --hivevar LOCATION=${BUCKET}/text/${SCALE}
 }
 
+function load_avro(){
+	echo "Loading avro data..."
+	spark-sql -f ddl/avro/avroDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_avro_${SCALE}
+}
+
+
+
 function load_parquet(){
 	echo "Loading parquet data..."
 	#beeline -u "jdbc:hive2://localhost:10000" -f ddl/parquet/parquetDDL.sql --hivevar DB=tpch_text_${SCALE} --hivevar DB1=tpch_parquet_${SCALE}
@@ -131,8 +138,13 @@ elif [ "$DATA_FORMAT" = "parquet" ]; then
 elif [ "$DATA_FORMAT" = "iceberg" ]; then 
 	load_iceberg
 
+elif [ "$DATA_FORMAT" = "avro" ]; then
+	load_avro
+
 elif [ "$DATA_FORMAT" = "all" ]; then
 	load_hudi
+	load_avro
+	load_parquet
 	load_delta
 	load_iceberg
 	load_orc
