@@ -94,16 +94,16 @@ function load_iceberg(){
         echo "Loading iceberg data..."
         spark-sql -f ddl/iceberg/icebergDDL.sql -hivevar DB=tpch_parquet_${SCALE} --hivevar DB1=tpch_iceberg_${SCALE} \
 	--packages org.apache.iceberg:iceberg-spark-runtime-3.1_2.12:0.14.0 \
-    	--conf spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions \
-    	--conf spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkSessionCatalog 
+    	--conf 'spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions' \
+    	--conf 'spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkSessionCatalog' 
 }
 
 function load_delta(){
 	echo "Loading delta data..."
 	spark-sql -f /ddl/delta/deltaDDL.sql -hivevar DB=tpch_parquet_${SCALE} --hivevar DB1=tpch_delta_${SCALE} \
 	--packages io.delta:delta-core_2.12:1.0.1 \
-	--conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
-	--conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
+	--conf 'spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension' \
+	--conf 'spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog'
 }
 
 function load_orc(){
