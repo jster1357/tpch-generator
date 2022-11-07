@@ -79,12 +79,13 @@ function load_parquet(){
 
 function load_avro(){
 	echo "Loading avro data..."
-	spark-sql -f ddl/avro/avroDDL.sql --hivevar DB=tpch_parquet_${SCALE} --hivevar DB1=tpch_avro_${SCALE}
+	spark-sql -f ddl/avro/avroDDL.sql --hivevar DB=tpch_parquet_${SCALE} --hivevar DB1=tpch_avro_${SCALE} \
+	--packages org.apache.spark:spark-avro_2.12:3.1.3
 }
 
 function load_hudi(){
 	echo "Loading hudi data..."
-	spark-sql -f ddl/hudi/hudiDDL.sql -hivevar DB=tpch_parquet_${SCALE} --hivevar DB1=tpch_hudi_${SCALE} \
+	spark-submit ddl/hudi/hudiDDL.py ${SCALE} \
   --packages org.apache.hudi:hudi-spark3.1-bundle_2.12:0.12.0 \
   --conf 'spark.serializer=org.apache.spark.serializer.KryoSerializer' \
   --conf 'spark.sql.extensions=org.apache.spark.sql.hudi.HoodieSparkSessionExtension'
@@ -92,7 +93,7 @@ function load_hudi(){
 
 function load_iceberg(){
         echo "Loading iceberg data..."
-        spark-sql -f ddl/iceberg/icebergDDL.sql -hivevar DB=tpch_parquet_${SCALE} --hivevar DB1=tpch_iceberg_${SCALE} \
+        spark-submit -f ddl/iceberg/icebergDDL.py ${SCALE} \
 	--packages org.apache.iceberg:iceberg-spark-runtime-3.1_2.12:0.14.0 \
     	--conf 'spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions' \
     	--conf 'spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkSessionCatalog' 
@@ -100,8 +101,8 @@ function load_iceberg(){
 
 function load_delta(){
 	echo "Loading delta data..."
-	spark-sql -f /ddl/delta/deltaDDL.sql -hivevar DB=tpch_parquet_${SCALE} --hivevar DB1=tpch_delta_${SCALE} \
-	--packages io.delta:delta-core_2.12:1.0.1 \
+	spark-submit ddl/delta/deltaDDL.py ${SCALE} \
+	--packages io.delta:delta-core_2.12:2.1.1 \
 	--conf 'spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension' \
 	--conf 'spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog'
 }
@@ -122,9 +123,6 @@ elif [ "$DATA_FORMAT" = "delta" ]; then
 
 elif [ "$DATA_FORMAT" = "orc" ]; then 
 	load_orc
-
-elif [ "$DATA_FORMAT" = "parquet" ]; then
-	load_parquet
 
 elif [ "$DATA_FORMAT" = "iceberg" ]; then 
 	load_iceberg

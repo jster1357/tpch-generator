@@ -18,6 +18,10 @@ scale = str(sys.argv[2])
 # In[ ]:
 
 
+db='tpch_parquet_' + str(scale)
+spark.sql("create database if not exists %s" % db)
+
+
 gcs_read_path = gcs_bucket + '/text/' + scale + '/customer'
 table_name = 'tpch_parquet_' + scale +'.customer'
 
